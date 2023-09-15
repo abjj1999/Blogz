@@ -14,3 +14,5 @@ const DBconnect = async () => {
         console.log(error);
     }
 }
+
+export default DBconnect;
