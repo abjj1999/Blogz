@@ -17,6 +17,32 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log('submitting form', name, email, password);
+    try {
+      setLoading(true);
+      const res = await fetch(`${process.env.API}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+      
+      if (!res.ok) {
+        const data = await res.json();
+        toast.error(data.err); 
+        return;
+      }
+
+      const data = await res.json();
+      toast.success(data.success);
+      router.push('/login');
+    } catch (error) {
+      console.log(error);
+      toast.error("Error creating account");
+      
+    }finally{
+      setLoading(false);
+    }
 
   }
   
@@ -49,7 +75,7 @@ const RegisterPage = () => {
                     Please enter a password.
                   </div>
                 </div>
-                <button type="submit" className=" fw-semibold btn text-light bg-primary w-100 ">
+                <button type="submit" disabled={!name || !email || !password || loading} className=" fw-semibold btn text-light bg-primary w-100 ">
                   {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true">
                   </span> : 'Register'}
                 </button>

@@ -4,10 +4,10 @@ const DBconnect = async () => {
     if (mongoose.connections.readyState >= 1) return;
 
     try {
-        await mongoose.connect(process.env.DB_URI, {
+        await mongoose.connect(process.env.DB_URL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useFindAndModify: false,
+
         });
         console.log("MongoDB connected");
     } catch (error) {

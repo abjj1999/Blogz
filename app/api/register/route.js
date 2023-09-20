@@ -1,49 +1,42 @@
 import { NextResponse } from "next/server";
-import DBconnect from "@/utils/DBconnect";
+import dbConnect from "@/utils/DBconnect";
 import User from "@/models/user";
-import bcrypt from "bcryptjs";
-
-export default async function register(req, res) {
-    const _req = await req.json();
-
-    await DBconnect();
-
+import bcrypt from "bcrypt";
+export async function POST(req) {
+  const _req = await req.json();
+  // console.log("_req => ", _req);
+  await dbConnect();
+  try {
     const { name, email, password } = _req;
-
-    try {
-        
-        const existsUser = await User.findOne({ email });
-
-        if (existsUser) {
-            return NextResponse.json({
-                err: "User already exists",
-            }, {
-                status: 409,
-            })
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        await newUser.save();
-
-        return NextResponse.json({
-            success: "User registered successfully",
-        },{ status: 201 });
-
-
-
-    } catch (error) {
-        console.log(error)
-        return NextResponse.json({
-            err: "Server error",
-        }, {
-            status: 500,
-        });
+    // Check if user with email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        {
+          err: "User with that email already exists",
+        },
+        { status: 409 }
+      );
+    } else {
+      await new User({
+        name,
+        email,
+        password: await bcrypt.hash(password, 10),
+      }).save();
+      return NextResponse.json(
+        {
+          success: "Registered successfully",
+        },
+        { status: 200 }
+      );
     }
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json(
+      {
+        err: "Server error. Please try again.",
+      },
+      { status: 500 }
+    );
+  }
 }

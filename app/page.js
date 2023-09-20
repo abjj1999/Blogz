@@ -2,7 +2,7 @@
 export default function Home() {
   return (
     <div className="
-      container
+      container 
     ">
       <p className="">Home</p>
     </div>
