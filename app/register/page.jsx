@@ -75,7 +75,7 @@ const RegisterPage = () => {
                     Please enter a password.
                   </div>
                 </div>
-                <button type="submit" disabled={!name || !email || !password || loading} className=" fw-semibold btn text-light bg-primary w-100 ">
+                <button type="submit" disabled={ loading} className="  btn text-dark fw-semibold bg-warning w-100 ">
                   {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true">
                   </span> : 'Register'}
                 </button>
