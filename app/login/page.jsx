@@ -1,27 +1,42 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const page = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading,setLoading] = useState(false);
+    const router = useRouter();
+   
   
-    const handleChange = (event) => {
-      switch (event.target.name) {
-        case 'email':
-          setEmail(event.target.value);
-          break;
-        case 'password':
-          setPassword(event.target.value);
-          break;
-        default:
-          break;
-      }
-    }
-  
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
+      // console.log(email, password)
       // Handle the submit event and validate the form
+      try {
+        const res = await fetch(`${process.env.API}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          toast.error(data.err);
+          return;
+        }
+
+        const data = await res.json();
+        toast.success(data.success);
+        // router.push('/dashboard');
+        
+      } catch (error) {
+        console.log(error);
+        toast.error("Error logging in");
+      }
     }
   
     return (
@@ -34,14 +49,14 @@ const page = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
-                    <input type="email" className="form-control" id="email" name="email" onChange={handleChange} required />
+                    <input type="email" className="form-control" id="email" name="email" onChange={(e) => setEmail(e.target.value)} required />
                     <div className="invalid-feedback">
                       Please enter a valid email address.
                     </div>
                   </div>
                   <div className="mb-3">
                     <label htmlFor="password" className="form-label">Password</label>
-                    <input type="password" className="form-control" id="password" name="password" onChange={handleChange} required />
+                    <input type="password" className="form-control" id="password" name="password" onChange={(e) => setPassword(e.target.value)} required />
                     <div className="invalid-feedback">
                       Please enter a password.
                     </div>
